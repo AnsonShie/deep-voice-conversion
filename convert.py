@@ -86,7 +86,7 @@ def do_convert(args, logdir1, logdir2):
     # Load graph
     model = Net2()
 
-    df = Net2DataFlow(hp.convert.data_path, hp.convert.batch_size)
+    df = Net2DataFlow(hp.convert.data_path, hp.convert.batch_size, False)
 
     ckpt1 = tf.train.latest_checkpoint(logdir1)
     ckpt2 = '{}/{}'.format(logdir2, args.ckpt) if args.ckpt else tf.train.latest_checkpoint(logdir2)
@@ -139,7 +139,7 @@ def get_arguments():
 
 if __name__ == '__main__':
     args = get_arguments()
-    hp.set_hparam_yaml(args.case2)
+    hp.set_hparam_yaml(args.case2, default_file='hparams/{}.yaml'.format(args.case2))
     logdir_train1 = '{}/{}/train1'.format(hp.logdir_path, args.case1)
     logdir_train2 = '{}/{}/train2'.format(hp.logdir_path, args.case2)
 

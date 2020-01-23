@@ -13,7 +13,7 @@ from tensorpack.tfutils.sessinit import ChainInit
 from tensorpack.tfutils.sessinit import SaverRestore
 from tensorpack.train.interface import TrainConfig
 from tensorpack.train.interface import launch_train_with_config
-from tensorpack.train.trainers import SyncMultiGPUTrainerReplicated
+from tensorpack.train.trainers import SimpleTrainer
 from tensorpack.utils import logger
 
 from data_load import Net2DataFlow
@@ -32,12 +32,12 @@ def train(args, logdir1, logdir2):
     # set logger for event and model saver
     logger.set_logger_dir(logdir2)
 
-    # session_conf = tf.ConfigProto(
-    #     gpu_options=tf.GPUOptions(
-    #         allow_growth=True,
-    #         per_process_gpu_memory_fraction=0.6,
-    #     ),
-    # )
+    session_conf = tf.ConfigProto(
+         gpu_options=tf.GPUOptions(
+             allow_growth=True,
+             per_process_gpu_memory_fraction=0.8,
+         ),
+    )
 
     session_inits = []
     ckpt2 = '{}/{}'.format(logdir2, args.ckpt) if args.ckpt else tf.train.latest_checkpoint(logdir2)
@@ -62,7 +62,7 @@ def train(args, logdir1, logdir2):
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
         train_conf.nr_tower = len(args.gpu.split(','))
 
-    trainer = SyncMultiGPUTrainerReplicated(hp.train2.num_gpu)
+    trainer = SimpleTrainer()
 
     launch_train_with_config(train_conf, trainer=trainer)
 
@@ -86,7 +86,8 @@ def get_arguments():
 
 if __name__ == '__main__':
     args = get_arguments()
-    hp.set_hparam_yaml(args.case2)
+    print(args.case2)
+    hp.set_hparam_yaml(args.case2, default_file='hparams/{}.yaml'.format(args.case2))
     logdir_train1 = '{}/{}/train1'.format(hp.logdir_path, args.case1)
     logdir_train2 = '{}/{}/train2'.format(hp.logdir_path, args.case2)
 

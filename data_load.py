@@ -16,9 +16,11 @@ from utils import normalize_0_1
 
 class DataFlow(RNGDataFlow):
 
-    def __init__(self, data_path, batch_size):
+    def __init__(self, data_path, batch_size, choose_random=True):
         self.batch_size = batch_size
         self.wav_files = glob.glob(data_path)
+        self.count = 0
+        self.choose_random = choose_random
 
     def __call__(self, n_prefetch=1000, n_thread=1):
         df = self
@@ -31,7 +33,11 @@ class Net1DataFlow(DataFlow):
 
     def get_data(self):
         while True:
-            wav_file = random.choice(self.wav_files)
+            if self.choose_random:
+                wav_file = random.choice(self.wav_files)
+            else:
+                wav_file = self.wav_files[self.count]
+                self.count = self.count + 1
             yield get_mfccs_and_phones(wav_file=wav_file)
 
 
@@ -39,7 +45,11 @@ class Net2DataFlow(DataFlow):
 
     def get_data(self):
         while True:
-            wav_file = random.choice(self.wav_files)
+            if self.choose_random:
+                wav_file = random.choice(self.wav_files)
+            else:
+                wav_file = self.wav_files[self.count]
+                self.count = self.count + 1
             yield get_mfccs_and_spectrogram(wav_file)
 
 
@@ -79,7 +89,7 @@ def get_mfccs_and_phones(wav_file, trim=False, random_crop=True):
     num_timesteps = mfccs.shape[0]
 
     # phones (targets)
-    phn_file = wav_file.replace("WAV.wav", "PHN").replace("wav", "PHN")
+    phn_file = wav_file.replace("WAV.wav", "PHN").replace("WAV", "PHN")
     phn2idx, idx2phn = load_vocab()
     phns = np.zeros(shape=(num_timesteps,))
     bnd_list = []
