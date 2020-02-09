@@ -57,10 +57,10 @@ def convert(predictor, df):
     y_spec = np.power(y_spec, hp.convert.emphasis_magnitude)
 
     # Spectrogram to waveform
-    audio = np.array(map(lambda spec: spec2wav(spec.T, hp.default.n_fft, hp.default.win_length, hp.default.hop_length,
-                                               hp.default.n_iter), pred_spec))
-    y_audio = np.array(map(lambda spec: spec2wav(spec.T, hp.default.n_fft, hp.default.win_length, hp.default.hop_length,
-                                                 hp.default.n_iter), y_spec))
+    audio = np.array(list(map(lambda spec: spec2wav(spec.T, hp.default.n_fft, hp.default.win_length, hp.default.hop_length,
+                                               hp.default.n_iter), pred_spec)))
+    y_audio = np.array(list(map(lambda spec: spec2wav(spec.T, hp.default.n_fft, hp.default.win_length, hp.default.hop_length,
+                                                 hp.default.n_iter), y_spec)))
 
     # Apply inverse pre-emphasis
     audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)

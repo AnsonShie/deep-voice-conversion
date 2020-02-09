@@ -36,6 +36,8 @@ class Net1DataFlow(DataFlow):
             if self.choose_random:
                 wav_file = random.choice(self.wav_files)
             else:
+                if self.count >= len(self.wav_files):
+                    break 
                 wav_file = self.wav_files[self.count]
                 self.count = self.count + 1
             yield get_mfccs_and_phones(wav_file=wav_file)
@@ -48,6 +50,8 @@ class Net2DataFlow(DataFlow):
             if self.choose_random:
                 wav_file = random.choice(self.wav_files)
             else:
+                if self.count >= len(self.wav_files):
+                    break 
                 wav_file = self.wav_files[self.count]
                 self.count = self.count + 1
             yield get_mfccs_and_spectrogram(wav_file)

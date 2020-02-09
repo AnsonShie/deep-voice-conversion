@@ -21,4 +21,4 @@ if [ ! -d "out" ]
     mkdir out
 fi
 
-nohup tensorboard --logdir=$logdir --port=$port --reload-interval=5 >> out/$case.tb.out &
+nohup tensorboard --logdir=$logdir --port=$port >> out/$case.tb.out &
